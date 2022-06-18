@@ -38,7 +38,7 @@ find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(RmlUi REQUIRED)
-find_package(PkgConfig)
+#find_package(PkgConfig)
 
 if(NOT SDL2_FOUND)
   message(SEND_ERROR "Failed to find SDL2.")
@@ -144,7 +144,8 @@ else()
   if(RMLUI_STATIC)
     add_custom_command(
       TARGET ${PROJECT_NAME} POST_BUILD
-      COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/lib/libRmlCore.a ${PROJECT_BINARY_DIR}/
+      #COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/lib/libRmlCore.a ${PROJECT_BINARY_DIR}/
+      COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/RmlUi/build/libRmlCore.a ${PROJECT_BINARY_DIR}/
     )
   endif()
 endif()

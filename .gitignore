@@ -33,3 +33,4 @@ dsutil.cpp.old
 dsutil.h.old
 main.cpp.old
 main.cpp.triplebuf
+build/
