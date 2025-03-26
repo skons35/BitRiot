@@ -18,6 +18,11 @@
 #define CheckFileExists CheckFileExists_win32
 #include "windows.h"
 #include "shlwapi.h"
+// VA add : Morphos assumed
+#else 
+#define CheckFileExists CheckFileExists_morphos
+#include <sys/stat.h>
+// end of VA add
 #endif
 
 namespace std
@@ -29,6 +34,7 @@ class MickUtil
     MickUtil();
     virtual ~MickUtil();
 
+	static bool CheckFileExists_morphos(string pathfile); // VA add
     static bool CheckFileExists_nix(string pathfile);
     static bool CheckFileExists_win32(string pathfile);
 };

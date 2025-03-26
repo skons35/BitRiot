@@ -16,6 +16,18 @@ MickUtil::MickUtil()
 
 }
 
+// VA add :
+bool MickUtil::CheckFileExists_morphos(string pathfile)
+{
+#if not defined (__GNUC__) || defined(__unix__) || defined(WIN32)
+	  return false;
+#else
+  struct stat buf;
+  return (stat(pathfile.c_str(), &buf) == 0);
+#endif
+}
+// end of VA add
+
 bool MickUtil::CheckFileExists_nix(string pathfile)
 {
 #if defined (__GNUC__) && defined(__unix__)

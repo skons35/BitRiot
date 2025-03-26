@@ -36,7 +36,10 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(OpenGL REQUIRED)
+# VA :below replaced by tinyGL search on MorphOS
+#find_package(OpenGL REQUIRED)
+find_package(TinyGL REQUIRED)
+#
 find_package(RmlUi REQUIRED)
 #find_package(PkgConfig)
 
@@ -56,10 +59,13 @@ if(NOT SDL2IMAGE_FOUND)
   message(SEND_ERROR "Failed to find SDL2_image.")
 endif()
 
+if(NOT TINYGL_FOUND)
+  message(SEND_ERROR "Failed to find TinyGL.")
+endif()
+
 if(NOT RMLUI_FOUND)
   message(SEND_ERROR "Failed to find RmlUi.")
 endif()
-
 
 #file(GLOB SOURCES src/*.cpp)
 
@@ -134,7 +140,8 @@ add_executable(BitRiot ${SOURCES})
 if(MINGW)
   target_link_libraries(BitRiot ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2IMAGE_LIBRARY} ${RMLUI_LIBRARIES} ${OPENGL_LIBRARIRES} shlwapi -mwindows)
 else()
-  target_link_libraries(BitRiot ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2IMAGE_LIBRARY} ${RMLUI_LIBRARIES} freetype ${OPENGL_LIBRARIRES})
+  #target_link_libraries(BitRiot ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2IMAGE_LIBRARY} ${RMLUI_LIBRARIES} freetype ${OPENGL_LIBRARIRES})
+  target_link_libraries(BitRiot ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2IMAGE_LIBRARY} ${TINYGL_LIBRARIES} ${RMLUI_LIBRARIES} freetype ${OPENGL_LIBRARIRES})
 
   add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
