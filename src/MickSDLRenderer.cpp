@@ -21,19 +21,36 @@ MickSDLRenderer::MickSDLRenderer(WindowMetadata windowMetadata) : MickBaseRender
 {
   assert(sInstance == nullptr);
   init(windowMetadata);
-  MickLogger::getInstance()->debug(this, "Created and initialised instance of MickSDLRenderer.");
+  //MickLogger::getInstance()->debug(this, "Created and initialised instance of MickSDLRenderer.");
   sInstance = this;
 }
 
 void MickSDLRenderer::init(WindowMetadata windowMetadata)
 {
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0 )
+  //VA : adding some logging mesg : 
+  //std::string msg = "Entered MickSDLRenderer::init(WindowMetadata windowMetadata) ...";
+  //MickLogger::getInstance()->debug(this, msg); // NOT DISPLAYED if DEBUG not set
+  //std::cerr << msg.c_str() << std::endl; // OK, displayed
+  
+  // SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE); // let SDL log lots of messages
+	
+  // VA change (method  options) : 
+  //if (SDL_Init(SDL_INIT_VIDEO) < 0 )
+  //if(SDL_InitSubSystem( 0 /* SDL_INIT_EVENTS | SDL_INIT_VIDEO  | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK */ ) < 0)    // OK too // end of VA change (note : same method than SDL_Init() )
+  if(SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_VIDEO  | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK ) < 0) 
   {
     std::string msg = "Failed to SDL_InitSubSystem video!";
     MickLogger::getInstance()->error(this, msg);
     throw new runtime_error(msg);
   }
-
+    
+  // VA : hanging before this line when missing some library at link : -noixemul -lSDSL2 --lGL -lc - lm
+  //MickLogger::getInstance()->debug(this, "AFTER SDL_InitSubSystem");
+  
+  // VA : a couple error above: "error writing to datastream" displayed when SDL set to log VERSOSELY (see above) -> not sure of these errors effects
+  //MickLogger::getInstance()->debug(this, "Last error was : ");
+  //MickLogger::getInstance()->debug(this, SDL_GetError());
+  
   m_windowHandle = SDL_CreateWindow(windowMetadata.windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 windowMetadata.windowWidth, windowMetadata.windowHeight, (windowMetadata.initFlags & ASK_FULLSCREEN) ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_RESIZABLE );
   if (m_windowHandle == nullptr)
@@ -55,6 +72,11 @@ void MickSDLRenderer::init(WindowMetadata windowMetadata)
   //SDL_RenderSetLogicalSize(m_rendererHandle, windowMetadata.windowWidth, windowMetadata.windowHeight);
 
   Uint32 pixel_format = SDL_GetWindowPixelFormat(m_windowHandle);
+  
+  // VA tempo debug :
+  //const char* pixFormatName = SDL_GetPixelFormatName(pixel_format);
+  //std::string pixFormString = pixFormatName;  // returns SDL_PIXELFORMAT_BGRA8888 for MorphOS case
+  //MickLogger::getInstance()->debug(this, std::string("Window created with pixel format : ").append(pixFormString) );
 
   m_textureHandle = SDL_CreateTexture(m_rendererHandle, pixel_format, SDL_TEXTUREACCESS_STREAMING,
                                           windowMetadata.windowWidth, windowMetadata.windowHeight);

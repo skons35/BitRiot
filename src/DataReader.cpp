@@ -8,12 +8,21 @@ DataReader::DataReader()
 
   m_errorString = "";
   //m_windowHandle = NULL;
+	
+ // VA debug log  :
+ //MickLogger::getInstance()->debug(nullptr, "DataReader() created");
+	
+ //MickLogger::getInstance()->debug(nullptr, std::string("DataReader() m_pIntFilemap size: ").append( std::to_string(m_pIntFilemap->size()) ) );
+ //MickLogger::getInstance()->debug(nullptr, std::string("DataReader() m_pStrFilemap size: ").append( std::to_string(m_pStrFilemap->size()) ) );
 }
 
 DataReader::~DataReader()
 {
   delete m_pIntFilemap;
   delete m_pStrFilemap;
+	
+ // VA debug log  :
+ //MickLogger::getInstance()->debug(nullptr, "DataReader() deleted");
 }
 
 DataReader * DataReader::getInstance()
@@ -56,10 +65,14 @@ void DataReader::clearCache()
 
 const int DataReader::getIntFromFile(const string & constantName, const string & filename)
 {
+  //VA debug log : 
+  //std::string infodeb = std::string("DataReader::getIntFromFile() > constantName : ").append(constantName).append(" , filename :").append(filename);
+  //MickLogger::getInstance()->debug(nullptr, infodeb);		
+  
   map<string, map<string, int> >::iterator filemapIterator = m_pIntFilemap->find(filename);
   if (filemapIterator == m_pIntFilemap->end())
   {
-    // filename was not found in filemap, try loading it in
+    // filename was not found in filemap, try loading it in	
     bool fileLoaded = readTextFile(filename);
     if (fileLoaded)
     {
@@ -96,6 +109,11 @@ const int DataReader::getIntFromFile(const string & constantName, const string &
 
 const string DataReader::getStringFromFile(const string & constantName, const string & filename)
 {
+
+  //VA debug log : 
+  //std::string infodeb = std::string("DataReader::getStringFromFile() > constantName : ").append(constantName).append(" , filename :").append(filename);
+  //MickLogger::getInstance()->debug(nullptr, infodeb);	
+	
   map<string, map<string, string> >::iterator filemapIterator = m_pStrFilemap->find(filename);
   if (filemapIterator == m_pStrFilemap->end())
   {
@@ -129,7 +147,7 @@ const string DataReader::getStringFromFile(const string & constantName, const st
     else
     {
       string result = valuemapIterator->second;
-      MickLogger::getInstance()->debug(this, string("DataReader getString: " + result).c_str());
+      //MickLogger::getInstance()->debug(this, string("DataReader getString: " + result).c_str());
       // constant name was found, return the value :D
       return result;
     }
@@ -137,14 +155,188 @@ const string DataReader::getStringFromFile(const string & constantName, const st
 }
 
 bool DataReader::readTextFile(const string & filename)
-{
+{  
+  // VA debug Log : 
+  //MickLogger::getInstance()->debug(nullptr, std::string("DataReader::readTextFile() called on : ").append( filename ).c_str() );
+  
+  // VA rewriting parsing using C code (File ,...)	: include stdio.h
+  FILE *inputFile = fopen(filename.c_str(), "rb"); // read in binary mode (> no change to end lines)
+  if (NULL == inputFile)
+	{
+		MickLogger::getInstance()->debug(nullptr, std::string("FAIL to open file :").append(filename ).c_str() );
+		return false;
+	}
+  //MickLogger::getInstance()->debug(nullptr, std::string("File OPENed :").append(filename ).c_str() );
+
+  // VA : read car per car using fgetc	
+  //  simple file parsing & display car per car : tested ok : 
+  //  int car;  // note it is a int, not a char, that returns fgetc()
+  //while (1)
+  //{	
+  //	car = fgetc(inputFile);
+  //	if ( EOF == car)
+  //	{
+  //		fprintf(stdout, "\n");
+  //		MickLogger::getInstance()->debug(nullptr, std::string("End of File REACHED").c_str() );
+  //		break;
+  //	}
+  //	
+  //	// tempo display :
+  //	fprintf(stdout, "%c", car); 
+  //	
+  //
+  // process the caracter (as in original code) :
+  //  (done in below more complete iteration)
+  //
+  //}
+  // end of VA : read car per car using fgetc	
+	
+  // recreate work of original loop code  :  
+  map<string, int> intValueMap;
+  map<string, string> strValueMap;
+  
+  /* // VA : tested ok to skip comments lines and empty lines
+  bool eol_detected = false; // EOL info needed in debug tempo display output
+  int car;    
+  car = fgetc(inputFile);
+  while (1)
+  {	
+  	if ( EOF == car)
+  	{
+  		fprintf(stdout, "\n");
+  		MickLogger::getInstance()->debug(nullptr, std::string("End of File REACHED").c_str() );
+  		break;
+  	}
+	
+	// pure debug display cosmetic
+	if (eol_detected)
+	 { fprintf(stdout, "\n"); eol_detected = false; }
+		
+	
+	if ( '#' == car)
+	{ 	  
+	  while (( EOF != car) && ( '\n' != (char) car))
+	  { 
+		  car = fgetc(inputFile);
+	  }	 
+	  //runMickLogger::getInstance()->debug(nullptr, std::string("(Comment line skipped)").c_str() );
+	  continue;
+	}
+  	
+	if ( ( '\r' == (char) car) || ( '\n' == (char) car))
+	{
+      while ( ( EOF != car) && ( ( '\r' == (char) car) || ( '\n' == (char) car)) )
+	   {
+		   car = fgetc(inputFile); 
+	   }	 
+	  // explicit request a EOL to add to debug line output (after one or more EOL cars parsed in sequence)
+	  eol_detected = true;
+	  continue;
+	}
+	
+	// At this point, we should have reached a line with 2 elements ( key value ) separated per space(s)
+		
+	// tempo display last acquired car (one car displayed at a time):
+  	fprintf(stdout, "%c", car); 	  
+	
+	// prepare looping : try get next char
+	car = fgetc(inputFile);
+	
+	// TO DO : rewrite using using fscanf() ???
+	// try a key - value extraction  (value may be a numeric OR alpha type)
+  }  
+  */ // end of VA : tested ok to skip comments lines and empty lines
+  
+  
+  char lineBuffer[255];
+  char varNameBuffer[126];
+  char varValueBuffer[126];
+  
+  while ( NULL != fgets(lineBuffer, sizeof(lineBuffer), inputFile) )
+  {
+	if ( '\n' == lineBuffer[0] || '#' == lineBuffer[0])
+	  continue; // skip empty line or comment ones
+	 
+	// assuming a 2 param lines (var then space(s) then value (numeric or alpha))
+    if ( 2 != sscanf(lineBuffer, "%s %s", varNameBuffer, varValueBuffer) )
+     {
+	   fprintf(stderr, "Skipping line in file:%s > unexpected format : %s \n", filename.c_str(), lineBuffer);
+	   continue;
+     }
+	    
+	// tempo display pair
+	//fprintf(stdout, "%s -> %s \n", varNameBuffer, varValueBuffer);
+	 
+	// ok extract variable name as string  and variable value as numeric OR string otherwise
+	string constantName = varNameBuffer;
+	string valueString = varValueBuffer; 
+	 
+	// test for string or int
+    if (isAlpha(valueString.at(0)))
+     {
+       // this is a string constant
+       pair<string, string> entry(constantName, valueString);
+       strValueMap.insert(entry);
+     }
+	else // should be a numeric 
+	 {
+	    if(!isNumericString(valueString))
+         {		   
+           string errorString = "Value after string: " + constantName + " in file: " + filename + " begins with a number but is not an int.";
+		   MickLogger::getInstance()->debug(nullptr, errorString.c_str() );
+           // ERROR Case exit :
+		   fclose(inputFile);
+           MickLogger::getInstance()->debug(nullptr, std::string("File CLOSED :").append(filename ).c_str() );
+           return false; 
+         }
+        else
+         {
+           // int value is ok, add to valueMap
+           stringstream ss(valueString);
+           int constantValue;
+           ss >> constantValue;
+
+           pair<string, int> entry(constantName, constantValue);
+           intValueMap.insert(entry);
+         } 
+	 }
+  }      
+  
+  fclose(inputFile);
+  //MickLogger::getInstance()->debug(nullptr, std::string("File CLOSED :").append(filename ).c_str() );
+  
+  // tempo debug info :
+  //fprintf(stdout,"Extracted var infos : \n intMap size = %u ,  strMap size = %u \n", intValueMap.size(), strValueMap.size());
+  
+  // FINISH ME (add maps to existing ones...)
+ 
+  // add the constant valueMaps to the object's filemaps
+  pair<string, map<string, int> > intFilemapEntry(filename, intValueMap);
+  m_pIntFilemap->insert(intFilemapEntry);
+  pair<string, map<string, string> > strFilemapEntry(filename, strValueMap);
+  m_pStrFilemap->insert(strFilemapEntry);
+  
+  // we are don, success read
+  return true;
+  
+	
+  // VA below original code hangs using inpustream and open() from this static DataReader class:		
+  
+  /*  // VA : start of Original Code 
   ifstream inputFile;
+  
   inputFile.open(filename.c_str());
+  
+	
   if (!inputFile.is_open())
   {
     m_errorString = "Could not open file: " + filename;
     return false;
   }
+  
+  // VA DEBUG
+  MickLogger::getInstance()->debug(nullptr, std::string("File opened").c_str() );
+  
 
   // set up map<string, int> for this file
   map<string, int> intValueMap;
@@ -153,8 +345,15 @@ bool DataReader::readTextFile(const string & filename)
   // loop through input file as char types
   char input;
   inputFile.get(input);
+  
+  // VA DEBUG
+  MickLogger::getInstance()->debug(nullptr, std::string("Looping in file caracter per caracter...: ").c_str() );
+  
   while ((input != '\0') && inputFile)
   {
+	// VA DEBUG	
+    fprintf(stderr, "%c", input);
+	  
     if (isWhitespace(input))
     {
       inputFile.get(input);
@@ -310,6 +509,9 @@ bool DataReader::readTextFile(const string & filename)
   m_pStrFilemap->insert(strFilemapEntry);
 
   return true;
+  
+  */
+  // VA : end of Original Code 
 }
 
 inline bool DataReader::isWhitespace(char c)

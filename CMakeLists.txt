@@ -14,15 +14,15 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 set(OpenGL_GL_PREFERENCE "GLVND")
 
-set(RMLUI_STATIC true)
-set(RMLUI_DIR ${BitRiot_SOURCE_DIR}/ext/RmlUi)
+#set(RMLUI_STATIC true)
+#set(RMLUI_DIR ${BitRiot_SOURCE_DIR}/ext/RmlUi)
 
-if(RMLUI_STATIC)
-  set(RMLUI_STATIC_DIR ${BitRiot_SOURCE_DIR}/ext/RmlUi/lib)
-endif()
+#if(RMLUI_STATIC)
+#  set(RMLUI_STATIC_DIR ${BitRiot_SOURCE_DIR}/ext/RmlUi/lib)
+#endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Release")
-  SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -s)
+#  SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -s)
 else()
   if(RMLUI_STATIC)
     # freetype wasn't linking in correctly when using RMLUI_STATIC due to use of Rml::Debugger. TODO fixme
@@ -148,15 +148,15 @@ else()
     COMMAND ln -sf ${PROJECT_SOURCE_DIR}/data ${PROJECT_BINARY_DIR}/
     COMMAND ln -sf ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/
   )
-  if(RMLUI_STATIC)
-    add_custom_command(
-      TARGET ${PROJECT_NAME} POST_BUILD
-      #COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/lib/libRmlCore.a ${PROJECT_BINARY_DIR}/
-      COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/RmlUi/build/libRmlCore.a ${PROJECT_BINARY_DIR}/
-    )
-  endif()
+#  if(RMLUI_STATIC)
+#    add_custom_command(
+#      TARGET ${PROJECT_NAME} POST_BUILD
+#      #COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/lib/libRmlCore.a ${PROJECT_BINARY_DIR}/
+#      COMMAND ln -sf ${PROJECT_SOURCE_DIR}/ext/RmlUi/RmlUi/build/libRmlCore.a ${PROJECT_BINARY_DIR}/
+#    )
+#  endif()
 endif()
 
-if(RMLUI_STATIC)
-  target_compile_definitions(BitRiot PRIVATE RMLUI_STATIC_LIB)
-endif()
+#if(RMLUI_STATIC)
+#  target_compile_definitions(BitRiot PRIVATE RMLUI_STATIC_LIB)
+#endif()

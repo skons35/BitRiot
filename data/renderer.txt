@@ -32,7 +32,6 @@ WALL_EATER	assets/bitmaps/walleater.bmp
 DRONE		assets/bitmaps/drone.bmp
 
 ROBOT1		assets/bitmaps/robot1.bmp
- 
+
 MUNCH_EFFECT	assets/bitmaps/munch.bmp
 DAMAGE_EFFECT	assets/bitmaps/damage.bmp
-

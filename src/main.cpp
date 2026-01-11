@@ -259,7 +259,8 @@ int main(int argc, char* argv[])
     cerr << e.what();
   }
 
-  cout << "Exiting.. " << endl;
+  // VA commented :
+  //cout << "Exiting.. " << endl;
   return 0;
 }
 

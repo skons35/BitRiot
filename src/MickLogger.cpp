@@ -17,6 +17,8 @@ namespace std
 
   static Logger* loggerInstance = nullptr;
 
+// VA tempo mod : test on DEBUG defined if wanting MorphOS debug logs
+//#ifdef DEBUG	
 #ifdef NDEBUG
   static bool DEBUG_ENABLED = false;
 #else
@@ -25,6 +27,8 @@ namespace std
 
   MickLogger::MickLogger()
   {
+	  //VA ADDED:
+	  //std::cerr << "DEBUG_ENABLE :" << DEBUG_ENABLED << std::endl;
   }
 
   Logger* MickLogger::getInstance()
