@@ -41,7 +41,8 @@ class EntityRenderer
     bool replaceTeamSurfaceWithImage(SDL_Surface* sdl_primary, const char * filename, int team);
 
   private:
-    void setupColours(SDL_Surface* sdl_primary);
+		
+	void setupColours(SDL_Surface* sdl_primary);
 
     SDL_Surface* m_animSurface[NUM_TEAMS]; // surface pointers for different teams
     int m_numFrames[NUM_TEAMS]; // number of animation frames for each team

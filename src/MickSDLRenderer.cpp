@@ -60,7 +60,9 @@ void MickSDLRenderer::init(WindowMetadata windowMetadata)
     throw new runtime_error(msg);
   }
 
-  m_rendererHandle = SDL_CreateRenderer(m_windowHandle, -1, 0);
+  // VA : try settings for MorphOS (below for avoiding full cpu use, set hardware accel and vsync wanted:)
+  m_rendererHandle = SDL_CreateRenderer(m_windowHandle, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); 
+  //m_rendererHandle = SDL_CreateRenderer(m_windowHandle, -1, 0); // << original code  
   if (m_rendererHandle == nullptr)
   {
     std::string msg = "Failed to create sdl_renderer!";

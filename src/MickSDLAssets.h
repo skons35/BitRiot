@@ -22,6 +22,9 @@ class MickSDLAssets: public std::MickAssets
     static SDL_Surface* Load_BMP(const char* pathfile);
     static SDL_Texture* LoadTexture_BMP(SDL_Renderer* renderer, const char* pathfile);
     virtual ~MickSDLAssets();
+	
+	//VA added:
+	static SDL_Surface* Load_BMP_With_ColorKey(const char * filename, Uint8 r, Uint8 g, Uint8 b, const SDL_PixelFormat * targetPixelFormat);
 
   private:
     MickSDLAssets();

@@ -41,20 +41,32 @@ void InputHandler::setPointers(vector<shared_ptr<PlayerCharacterEntity>> playerC
 void InputHandler::setAvailableKeys()
 {
   array<KEY, NUM_ACTION_BUTTONS> keySet;
+  /* // VA change layout and avoid using special keys (R and L shift and CTRL are not distinct)	
   keySet[UP_KEY] = KEY_w;
   keySet[DOWN_KEY] = KEY_s;
   keySet[LEFT_KEY] = KEY_a;
   keySet[RIGHT_KEY] = KEY_d;
   keySet[ACTION1_KEY] = KEY_LCTRL;
   keySet[ACTION2_KEY] = KEY_LSHIFT;
+  */
+  keySet[UP_KEY] = KEY_z;
+  keySet[DOWN_KEY] = KEY_s;
+  keySet[LEFT_KEY] = KEY_q;
+  keySet[RIGHT_KEY] = KEY_d;
+  keySet[ACTION1_KEY] = KEY_r;
+  keySet[ACTION2_KEY] = KEY_f;
   m_availableKeySets.push_back(keySet);
 
   keySet[UP_KEY] = KEY_UP;
   keySet[DOWN_KEY] = KEY_DOWN;
   keySet[LEFT_KEY] = KEY_LEFT;
   keySet[RIGHT_KEY] = KEY_RIGHT;
+  /* // VA change layout 
   keySet[ACTION1_KEY] = KEY_RCTRL;
   keySet[ACTION2_KEY] = KEY_RSHIFT;
+  */
+  keySet[ACTION1_KEY] = KEY_PAGEDOWN;
+  keySet[ACTION2_KEY] = KEY_END;
   m_availableKeySets.push_back(keySet);
 
   keySet[UP_KEY] = KEY_KP8;
@@ -69,8 +81,12 @@ void InputHandler::setAvailableKeys()
   keySet[DOWN_KEY] = KEY_k;
   keySet[LEFT_KEY] = KEY_j;
   keySet[RIGHT_KEY] = KEY_l;
+  /* // VA change layout 	
   keySet[ACTION1_KEY] = KEY_LEFTBRACKET;
   keySet[ACTION2_KEY] = KEY_RIGHTBRACKET;
+  */
+   keySet[ACTION1_KEY] = KEY_p;
+  keySet[ACTION2_KEY] = KEY_m;
   m_availableKeySets.push_back(keySet);
 
   // TODO m_keyMap for players 5 and 6
